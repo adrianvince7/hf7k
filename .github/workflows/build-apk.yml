@@ -1,0 +1,105 @@
+name: Build HF7000 Test App APK
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up JDK 8
+      uses: actions/setup-java@v3
+      with:
+        java-version: '8'
+        distribution: 'adopt'
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        api-level: 22
+        build-tools: 28.0.3
+        
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+          
+    - name: Make gradlew executable
+      run: chmod +x gradlew
+      
+    - name: Build debug APK
+      run: |
+        echo "Building HF7000 Test App for VFD 100..."
+        ./gradlew testapp:assembleDebug --stacktrace
+        
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: hf7000-testapp-debug-vfd100
+        path: testapp/build/outputs/apk/debug/testapp-debug.apk
+        retention-days: 30
+        
+    - name: Get APK info
+      run: |
+        APK_PATH="testapp/build/outputs/apk/debug/testapp-debug.apk"
+        if [ -f "$APK_PATH" ]; then
+          echo "APK Size: $(du -h $APK_PATH | cut -f1)"
+          echo "APK Path: $APK_PATH"
+          
+          # Get APK details if aapt is available
+          if command -v aapt &> /dev/null; then
+            echo "APK Details:"
+            aapt dump badging "$APK_PATH" | head -10
+          fi
+        else
+          echo "APK not found!"
+          exit 1
+        fi
+        
+    - name: Create Release (on tag)
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: testapp/build/outputs/apk/debug/testapp-debug.apk
+        name: HF7000 Test App - VFD 100 Debug Build
+        body: |
+          ## HF7000 Test App - Debug APK for VFD 100
+          
+          **Optimized for VFD 100 device (Android 5.1, API 22)**
+          
+          ### Features:
+          - ✅ VFD 100 device detection and optimization
+          - ✅ Memory-efficient design for 480MB RAM
+          - ✅ HF7000 G0603990 Bluetooth integration
+          - ✅ Fingerprint capture and matching via external scanner
+          - ✅ NFC card reading via HF7000 device
+          
+          ### Installation:
+          1. Enable USB debugging on VFD 100
+          2. Connect device via USB
+          3. Run: `adb install testapp-debug.apk`
+          4. Launch "HF7000 Test App"
+          
+          ### Requirements:
+          - VFD 100 device (or Android 5.1+ with Bluetooth)
+          - HF7000 G0603990 biometric scanner
+          - Bluetooth pairing between devices
+          
+          See README.md and VFD100_COMPATIBILITY.md for detailed instructions.
+        draft: false
+        prerelease: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
