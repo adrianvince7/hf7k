@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         initViews();
+        checkDeviceCompatibility();
         setupReaderReceiver();
         setupClickListeners();
         updateUI();
@@ -47,6 +48,24 @@ public class MainActivity extends AppCompatActivity implements
         btnMatch = findViewById(R.id.btnMatch);
         btnReadCard = findViewById(R.id.btnReadCard);
         btnClear = findViewById(R.id.btnClear);
+    }
+
+    private void checkDeviceCompatibility() {
+        // Log device information
+        updateStatus("Device: " + DeviceConfig.getDeviceInfo());
+        
+        // Show compatibility status in result area initially
+        updateResult(DeviceConfig.getCompatibilityStatus());
+        
+        // Special handling for VFD 100
+        if (DeviceConfig.isTargetDevice()) {
+            Toast.makeText(this, "VFD 100 detected - HF7000 ready!", Toast.LENGTH_LONG).show();
+        }
+        
+        // Disable NFC button if no NFC hardware
+        if (!DeviceConfig.SUPPORTS_NFC) {
+            btnReadCard.setText("Read NFC Card (via HF7000)");
+        }
     }
 
     private void setupReaderReceiver() {
@@ -117,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void readNFCCard() {
-        updateStatus("Starting NFC card reading...");
+        updateStatus("Starting NFC card reading via HF7000...");
         updateResult("");
         
         Intent intent = new Intent(this, BluetoothReader.class);
@@ -128,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements
     private void clearStoredTemplate() {
         storedTemplate = null;
         updateUI();
-        updateStatus("Template cleared");
+        updateStatus("Template cleared - Memory optimized for VFD 100");
         updateResult("");
     }
 

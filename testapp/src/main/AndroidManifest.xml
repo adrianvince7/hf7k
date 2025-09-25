@@ -8,8 +8,16 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     
-    <!-- NFC permission -->
+    <!-- NFC permission - optional for devices without NFC -->
     <uses-permission android:name="android.permission.NFC" />
+    <uses-feature 
+        android:name="android.hardware.nfc" 
+        android:required="false" />
+    
+    <!-- Explicitly declare this app doesn't require fingerprint hardware -->
+    <uses-feature 
+        android:name="android.hardware.fingerprint" 
+        android:required="false" />
 
     <application
         android:allowBackup="true"
