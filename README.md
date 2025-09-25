@@ -7,7 +7,20 @@ an Android application can perform the following:
 - Match Fingerprints
 - Read NFC Tags & Cards
 
-Usage:
+## 🆕 Test Android App
+
+**NEW**: This repository now includes a complete test Android application (`testapp` module) that demonstrates how to connect to and interact with HF7000 devices.
+
+### Quick Start
+
+1. Clone the repository
+2. Run `./build_test_app.sh` to build the test app
+3. Install on your Android device: `./gradlew testapp:installDebug`
+4. Launch "HF7000 Test App" and start testing your HF7000 device!
+
+**📖 For detailed instructions, see: [HF7000_TEST_APP_README.md](HF7000_TEST_APP_README.md)**
+
+## Library Usage
 
 Step 1. Add the JitPack repository to your build file
 Add it in your root build.gradle at the end of repositories:
