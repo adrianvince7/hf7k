@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HF7000 Test App</string>
+    <string name="capture_fingerprint">Capture Fingerprint</string>
+    <string name="match_fingerprint">Match Fingerprint</string>
+    <string name="read_nfc_card">Read NFC Card</string>
+    <string name="status">Status</string>
+    <string name="result">Result</string>
+    <string name="ready">Ready</string>
+    <string name="hf7000_device_test">HF7000 Device Test</string>
+    <string name="clear">Clear</string>
+    <string name="stored_template">Stored Template</string>
+    <string name="no_template_stored">No template stored</string>
+</resources>
